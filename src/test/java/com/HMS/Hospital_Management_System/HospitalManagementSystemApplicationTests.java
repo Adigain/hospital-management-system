@@ -1,4 +1,4 @@
-package com.HMS.Hospital_Management_System;
+package com.hms.hospital_management_system;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
