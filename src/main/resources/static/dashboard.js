@@ -1,6 +1,21 @@
-// dashboard.js
-// This script is the universal engine for all role-based dashboards.
-// It assumes that a global `contentRoutes` object is defined in the HTML file that loads it.
+/**
+ * dashboard.js - Universal Dashboard Engine
+ * 
+ * This script serves as the core engine for all role-based dashboards in the HMS system.
+ * It provides dynamic content loading, dark mode support, responsive sidebar,
+ * and initializes various dashboard components including charts and tables.
+ * 
+ * Dependencies:
+ * - Chart.js - For rendering statistical charts
+ * - FullCalendar - For appointment calendar management
+ * - DataTables - For interactive patient tables
+ * - AOS - For smooth animations
+ * - Ionicons - For UI icons
+ * 
+ * Required Global Objects:
+ * - contentRoutes: Defined in the HTML file that loads this script.
+ *                 Maps section names to their content URLs.
+ */
 
 document.addEventListener('DOMContentLoaded', function () {
     const sidebar = document.getElementById('sidebar');
@@ -18,8 +33,15 @@ document.addEventListener('DOMContentLoaded', function () {
     let calendarInstance = null;
     let patientTableInstance = null;
 
-    // Dynamically load content for the selected section.
-    // This function uses the `contentRoutes` object defined in the calling HTML file.
+    /**
+     * Dynamically loads content for the selected dashboard section.
+     * 
+     * Uses the contentRoutes object to fetch the appropriate content for each section.
+     * Updates the URL hash, renders the content, and initializes section-specific scripts.
+     * 
+     * @param {string} sectionName - The name/identifier of the section to load
+     * @returns {Promise<void>} A promise that resolves when content is loaded
+     */
     async function loadContent(sectionName) {
         const url = contentRoutes[sectionName];
         if (!url) {
@@ -106,7 +128,16 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // --- Universal initialization function for loaded content ---
+    /**
+     * Universal initialization function for loaded content.
+     * 
+     * Initializes animations and section-specific components such as:
+     * - Dashboard: Patient admission and department charts
+     * - Patients: Interactive patient data table
+     * - Appointments: FullCalendar appointment scheduler
+     * 
+     * @param {string} sectionName - The name of the section being initialized
+     */
     function initializePageScripts(sectionName) {
         AOS.init({ duration: 800, once: true });
         AOS.refreshHard();
@@ -128,7 +159,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     loadContent(initialSection);
 
-    // --- Chart.js functions ---
+    /**
+     * Returns a color palette based on the current theme (light/dark).
+     * 
+     * Used by charts to maintain consistent theming and readability
+     * in both light and dark modes.
+     * 
+     * @returns {Object} Color configuration for charts
+     */
     function getChartColors() {
         const isDark = document.documentElement.classList.contains('dark');
         return {
@@ -139,6 +177,12 @@ document.addEventListener('DOMContentLoaded', function () {
             tertiaryColor: '#F59E0B',
         };
     }
+    /**
+     * Initializes the Patient Admissions line chart.
+     * 
+     * Creates a Chart.js line chart showing patient admission trends
+     * over time. The chart is responsive and theme-aware.
+     */
     function initPatientAdmissionsChart() {
         const canvas = document.getElementById('patientAdmissionsChart');
         if (!canvas) {
@@ -168,6 +212,12 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+    /**
+     * Initializes the Department Popularity doughnut chart.
+     * 
+     * Creates a Chart.js doughnut chart showing the distribution
+     * of patient visits across different hospital departments.
+     */
     function initDepartmentPopularityChart() {
         const canvas = document.getElementById('departmentPopularityChart');
         if (!canvas) {
@@ -193,6 +243,13 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+    /**
+     * Initializes the FullCalendar appointment scheduler.
+     * 
+     * Sets up an interactive calendar for managing appointments.
+     * Supports multiple views (month/week/day) and event management.
+     * Re-renders on sidebar collapse/expand for proper sizing.
+     */
     function initFullCalendar() {
         const calendarEl = document.getElementById('calendar');
         if (calendarEl && !isCalendarRendered) {
@@ -218,6 +275,16 @@ document.addEventListener('DOMContentLoaded', function () {
             calendarInstance.updateSize();
         }
     }
+    /**
+     * Initializes the interactive patient data table.
+     * 
+     * Creates a DataTable instance for managing patient records.
+     * Features include:
+     * - Responsive layout
+     * - Search/filter functionality
+     * - Sortable columns
+     * - Action buttons for view/edit/delete
+     */
     function initPatientTable() {
         const patientTable = $('#patientTable');
         if (patientTable.length && $.fn.DataTable) {

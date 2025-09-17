@@ -1,9 +1,15 @@
+/**
+ * User Details Service Implementation
+ * 
+ * This service implements Spring Security's UserDetailsService:
+ * - Loads user details from the database
+ * - Converts User entities to Spring Security UserDetails
+ * - Provides user authentication data to Security framework
+ * - Validates user existence and credentials
+ */
 package com.hms.service;
 
-import java.util.Collections;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,7 +19,7 @@ import com.hms.model.User;
 import com.hms.repository.UserRepository;
 
 @Service
-public class CustomUserDetailsService implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
@@ -24,10 +30,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("User not found with email: " + email);
         }
-        return new org.springframework.security.core.userdetails.User(
-            user.getEmail(),
-            user.getPassword(),
-            Collections.singleton(new SimpleGrantedAuthority("ROLE_" + user.getRole().toUpperCase()))
-        );
+        return user;
     }
 }

@@ -1,3 +1,13 @@
+/**
+ * User Entity Model
+ * 
+ * This entity represents user data in the system:
+ * - Core user information (ID, email, password, name)
+ * - Role-based authorization data
+ * - Implements Spring Security's UserDetails interface
+ * - Manages user authentication state
+ * - Maps to the 'users' database table
+ */
 package com.hms.model;
 
 import java.util.Collection;
