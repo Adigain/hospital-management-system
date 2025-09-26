@@ -1,7 +1,6 @@
 /**
  * Login and Registration Handler
- * 
- * Core frontend functionality for authentication:
+ * * Core frontend functionality for authentication:
  * - Manages user login and registration forms
  * - Handles form submissions and validation
  * - Implements role-based form switching
@@ -21,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentRole = 'patient';
     let currentMode = 'login';
-    
+
     // Get CSRF token from meta tag
     const getCsrfToken = () => {
         const token = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
@@ -43,47 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
         'patient': '/static/forms/patient-register.html',
         'staff': '/static/forms/staff-register.html',
         'pharmacy': '/static/forms/pharmacy-staff-register.html'
-    };
-
-    const setupFormListeners = (form, role, mode) => {
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const formData = new FormData(form);
-            const { token, header } = getCsrfToken();
-            
-            try {
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        [header]: token,
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: new URLSearchParams(formData)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                if (data.success) {
-                    if (mode === 'login') {
-                        window.location.href = `/${role.toLowerCase()}/dashboard`;
-                    } else {
-                        alert('Registration successful! Please login.');
-                        currentMode = 'login';
-                        loadForm(currentRole, currentMode);
-                    }
-                } else {
-                    throw new Error(data.message || 'Operation failed');
-                }
-            } catch (error) {
-                console.error('Form submission failed:', error);
-                alert(error.message || 'An error occurred. Please try again.');
-            }
-        });
     };
 
     const loadForm = async (role, mode) => {
@@ -108,23 +66,27 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         try {
+            console.log('Fetching form from:', url);
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
                     'Accept': 'text/html',
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Cache-Control': 'no-cache'
+                },
+                credentials: 'same-origin'
             });
-            
+
+            console.log('Response status:', response.status);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             const htmlContent = await response.text();
             if (!htmlContent.trim()) {
                 throw new Error('Empty form content received');
             }
-            
+
             formArea.innerHTML = htmlContent;
 
             const form = formArea.querySelector('form');
@@ -137,9 +99,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 form.setAttribute('method', 'post');
 
+                // Remove any existing CSRF token input
+                const existingCsrfInput = form.querySelector('input[name="_csrf"]');
+                if (existingCsrfInput) {
+                    existingCsrfInput.remove();
+                }
+
                 // Add CSRF token input
                 const { token, header } = getCsrfToken();
-                if (token && header) {
+                if (token) {
                     const csrfInput = document.createElement('input');
                     csrfInput.type = 'hidden';
                     csrfInput.name = '_csrf';
@@ -152,23 +120,82 @@ document.addEventListener('DOMContentLoaded', () => {
                     const roleInput = document.createElement('input');
                     roleInput.type = 'hidden';
                     roleInput.name = 'role';
-                    roleInput.value = role;
+                    roleInput.value = role.toUpperCase().replace('-', '_'); // Convert to uppercase and replace hyphens with underscores
                     form.appendChild(roleInput);
                 }
 
-                // Setup form submission handler
-                setupFormListeners(form, role, mode);
-            }
-
-            const switchLink = document.getElementById('switch-form-link');
-            if (switchLink) {
-                switchLink.addEventListener('click', (e) => {
+                // Add form submission handler
+                form.addEventListener('submit', async (e) => {
                     e.preventDefault();
-                    currentMode = currentMode === 'login' ? 'register' : 'login';
-                    loadForm(currentRole, currentMode);
-                });
-            }
+                    const formData = new FormData(form);
+                    const { token, header } = getCsrfToken();
 
+                    try {
+                        if (mode === 'login') {
+                            // For login, submit the form normally but handle the redirect
+                            const response = await fetch(form.action, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    [header]: token
+                                },
+                                body: new URLSearchParams(formData)
+                            });
+                            
+                            if (response.ok || response.redirected) {
+                                // Map roles to their dashboard URLs
+                                const dashboardUrls = {
+                                    'admin': '/admin/admin-dashboard',
+                                    'doctor': '/doctor/dashboard',
+                                    'patient': '/patient/dashboard',
+                                    'staff': '/staff/dashboard',
+                                    'pharmacy': '/pharmacy/dashboard'
+                                };
+                                window.location.href = dashboardUrls[currentRole] || '/';
+                            } else {
+                                throw new Error('Invalid credentials');
+                            }
+                        } else {
+                            // For registration, use fetch API
+                            const response = await fetch(form.action, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    [header]: token
+                                },
+                                body: JSON.stringify(Object.fromEntries(formData))
+                            });
+
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+
+                            const result = await response.json();
+                            if (result.success) {
+                                alert('Registration successful! Please log in.');
+                                currentMode = 'login';
+                                loadForm(currentRole, currentMode);
+                            } else {
+                                alert(result.message || 'Registration failed. Please try again.');
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Form submission error:', error);
+                        alert('An error occurred. Please try again.');
+                    }
+                });
+
+                const switchLink = document.getElementById('switch-form-link');
+                if (switchLink) {
+                    switchLink.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        currentMode = currentMode === 'login' ? 'register' : 'login';
+                        loadForm(currentRole, currentMode);
+                    });
+                }
+            }
         } catch (error) {
             console.error('Failed to load form:', error);
             formArea.innerHTML = '<div class="p-6 text-red-500">Failed to load form.</div>';

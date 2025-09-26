@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="">
+<html lang="en" class="" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
-    <link rel="stylesheet" href="../../static/style.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -34,35 +34,35 @@
         </div>
 
         <nav id="sidebar-nav" class="flex-grow px-2 space-y-1 pt-2">
-            <a href="#dashboard" data-section="dashboard" class="sidebar-link active flex items-center py-2.5 px-4 rounded-lg hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 group">
+            <a href="#dashboard" data-section="dashboard" class="sidebar-link active flex items-center py-2.5 px-4 rounded-lg hover:bg-gray-1000 hover:text-white dark:hover:bg-blue-600 group">
                 <ion-icon name="grid-outline" class="text-xl text-gray-500 dark:text-gray-400 group-hover:text-white"></ion-icon>
                 <span class="sidebar-text ml-3 text-sm font-medium">Dashboard</span>
             </a>
-            <a href="#patients" data-section="patients" class="sidebar-link flex items-center py-2.5 px-4 rounded-lg hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 group">
+            <a href="#patients" data-section="patients" class="sidebar-link flex items-center py-2.5 px-4 rounded-lg hover:bg-gray-1000 hover:text-white dark:hover:bg-blue-600 group">
                 <ion-icon name="people-outline" class="text-xl text-gray-500 dark:text-gray-400 group-hover:text-white"></ion-icon>
                 <span class="sidebar-text ml-3 text-sm font-medium">Patient Management</span>
             </a>
-            <a href="#doctors" data-section="doctors" class="sidebar-link flex items-center py-2.5 px-4 rounded-lg hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 group">
+            <a href="#doctors" data-section="doctors" class="sidebar-link flex items-center py-2.5 px-4 rounded-lg hover:bg-gray-1000 hover:text-white dark:hover:bg-blue-600 group">
                 <ion-icon name="medkit-outline" class="text-xl text-gray-500 dark:text-gray-400 group-hover:text-white"></ion-icon>
                 <span class="sidebar-text ml-3 text-sm font-medium">Doctor Management</span>
             </a>
-            <a href="#appointments" data-section="appointments" class="sidebar-link flex items-center py-2.5 px-4 rounded-lg hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 group">
+            <a href="#appointments" data-section="appointments" class="sidebar-link flex items-center py-2.5 px-4 rounded-lg hover:bg-gray-1000 hover:text-white dark:hover:bg-blue-600 group">
                 <ion-icon name="calendar-outline" class="text-xl text-gray-500 dark:text-gray-400 group-hover:text-white"></ion-icon>
                 <span class="sidebar-text ml-3 text-sm font-medium">Appointments</span>
             </a>
-            <a href="#billing" data-section="billing" class="sidebar-link flex items-center py-2.5 px-4 rounded-lg hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 group">
+            <a href="#billing" data-section="billing" class="sidebar-link flex items-center py-2.5 px-4 rounded-lg hover:bg-gray-1000 hover:text-white dark:hover:bg-blue-600 group">
                 <ion-icon name="card-outline" class="text-xl text-gray-500 dark:text-gray-400 group-hover:text-white"></ion-icon>
                 <span class="sidebar-text ml-3 text-sm font-medium">Billing & Invoices</span>
             </a>
-            <a href="#pharmacy" data-section="pharmacy" class="sidebar-link flex items-center py-2.5 px-4 rounded-lg hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 group">
+            <a href="#pharmacy" data-section="pharmacy" class="sidebar-link flex items-center py-2.5 px-4 rounded-lg hover:bg-gray-1000 hover:text-white dark:hover:bg-blue-600 group">
                 <ion-icon name="flask-outline" class="text-xl text-gray-500 dark:text-gray-400 group-hover:text-white"></ion-icon>
                 <span class="sidebar-text ml-3 text-sm font-medium">Pharmacy</span>
             </a>
-            <a href="#records" data-section="records" class="sidebar-link flex items-center py-2.5 px-4 rounded-lg hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 group">
+            <a href="#records" data-section="records" class="sidebar-link flex items-center py-2.5 px-4 rounded-lg hover:bg-gray-1000 hover:text-white dark:hover:bg-blue-600 group">
                 <ion-icon name="document-text-outline" class="text-xl text-gray-500 dark:text-gray-400 group-hover:text-white"></ion-icon>
                 <span class="sidebar-text ml-3 text-sm font-medium">Medical Records</span>
             </a>
-            <a href="#staff" data-section="staff" class="sidebar-link flex items-center py-2.5 px-4 rounded-lg hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 group">
+            <a href="#staff" data-section="staff" class="sidebar-link flex items-center py-2.5 px-4 rounded-lg hover:bg-gray-1000 hover:text-white dark:hover:bg-blue-600 group">
                 <ion-icon name="shield-checkmark-outline" class="text-xl text-gray-500 dark:text-gray-400 group-hover:text-white"></ion-icon>
                 <span class="sidebar-text ml-3 text-sm font-medium">Staff & Admin</span>
             </a>
@@ -72,7 +72,7 @@
             <div class="flex items-center">
                 <img src="https://www.codewithfaraz.com/tools/placeholder?size=32&text=EC" alt="User Avatar" class="h-10 w-10 rounded-full object-cover">
                 <div class="profile-info ml-3">
-                    <p class="text-sm font-medium text-gray-800 dark:text-white">Dr. Emily Carter</p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white">Dr. gaurav</p>
                     <p class="text-xs text-gray-500 dark:text-gray-400">Administrator</p>
                 </div>
             </div>
@@ -107,7 +107,7 @@
                 <div class="relative">
                     <button id="userMenuButton" class="flex items-center space-x-2 focus:outline-none">
                         <img src="https://www.codewithfaraz.com/tools/placeholder?size=32&text=EC" alt="User Avatar" class="h-8 w-8 rounded-full object-cover">
-                        <span class="hidden md:inline text-sm font-medium text-gray-700 dark:text-gray-300">Dr. Carter</span>
+                        <span class="hidden md:inline text-sm font-medium text-gray-700 dark:text-gray-300">Dr. gaurav</span>
                         <ion-icon name="chevron-down-outline" class="hidden md:inline text-xs text-gray-500 dark:text-gray-400"></ion-icon>
                     </button>
                     <div id="userMenu" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 hidden ring-1 ring-black ring-opacity-5 z-10">
@@ -120,6 +120,73 @@
         </header>
 
         <main id="content-area" class="flex-1 overflow-x-hidden overflow-y-auto p-6 space-y-6">
+            <section id="dashboard" class="content-section" data-aos="fade-up">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Total Patients</p>
+                                <h3 class="text-2xl font-bold text-gray-800 dark:text-white">1,234</h3>
+                            </div>
+                            <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
+                                <ion-icon name="people-outline" class="text-2xl text-blue-500 dark:text-blue-400"></ion-icon>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Active Doctors</p>
+                                <h3 class="text-2xl font-bold text-gray-800 dark:text-white">45</h3>
+                            </div>
+                            <div class="p-3 bg-green-100 dark:bg-green-900 rounded-full">
+                                <ion-icon name="medkit-outline" class="text-2xl text-green-500 dark:text-green-400"></ion-icon>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Today's Appointments</p>
+                                <h3 class="text-2xl font-bold text-gray-800 dark:text-white">28</h3>
+                            </div>
+                            <div class="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-full">
+                                <ion-icon name="calendar-outline" class="text-2xl text-yellow-500 dark:text-yellow-400"></ion-icon>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Total Revenue</p>
+                                <h3 class="text-2xl font-bold text-gray-800 dark:text-white">$52,389</h3>
+                            </div>
+                            <div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-full">
+                                <ion-icon name="cash-outline" class="text-2xl text-purple-500 dark:text-purple-400"></ion-icon>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Patient Admissions</h3>
+                        <div class="h-80">
+                            <canvas id="patientAdmissionsChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Department Popularity</h3>
+                        <div class="h-80">
+                            <canvas id="departmentPopularityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
             </main>
     </div>
 
@@ -131,16 +198,24 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         const contentRoutes = {
-            'dashboard': 'dashboard.html',
-            'patients': 'patients.html',
-            'doctors': 'doctors.html',
-            'appointments': 'appointments.html',
-            'billing': 'billing.html',
-            'pharmacy': 'pharmacy.html',
-            'records': 'records.html',
-            'staff': 'staff.html'
+            'dashboard': '/admin/dashboard',
+            'patients': '/admin/patients',
+            'doctors': '/admin/doctors',
+            'appointments': '/admin/appointments',
+            'billing': '/admin/billing',
+            'pharmacy': '/admin/pharmacy',
+            'records': '/admin/records',
+            'staff': '/admin/staff'
         };
     </script>
-    <script src="../../static/dashboard.js"></script>
+    <script src="/js/dashboard.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const dashboardData = {
+            currentUser: /*[[${#authentication.name}]]*/ 'Anonymous',
+            isAdmin: /*[[${#authentication.authorities.![authority].contains('ROLE_ADMIN')}]]*/ false
+        };
+        /*]]>*/
+    </script>
 </body>
 </html>

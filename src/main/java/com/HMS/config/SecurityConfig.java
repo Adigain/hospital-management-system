@@ -23,10 +23,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import jakarta.servlet.http.HttpServletResponse;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -47,8 +52,11 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/", "/index", "/login", "/api/register", "/static/**", "/forms/**", "/perform_login").permitAll()
+        http.authenticationProvider(authenticationProvider()) // Register the authentication provider
+            .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/", "/index", "/login", "/api/register", "/css/**", "/js/**", "/images/**", "/static/**", "/forms/**", "/perform_login", "/error").permitAll()
+                .requestMatchers("/style.css", "/dashboard.js", "/login-register.js").permitAll() // Added login-register.js
+                .requestMatchers("/static/forms/**", "/static/css/**", "/static/js/**").permitAll() // Expanded static paths
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/doctor/**").hasRole("DOCTOR")
                 .requestMatchers("/patient/**").hasRole("PATIENT")
@@ -59,22 +67,28 @@ public class SecurityConfig {
             .formLogin(login -> login
                 .loginPage("/")
                 .loginProcessingUrl("/perform_login")
+                .defaultSuccessUrl("/admin/admin-dashboard", false) // Set default success URL
                 .successHandler((request, response, authentication) -> {
                     String role = authentication.getAuthorities().iterator().next().getAuthority();
                     String redirectUrl = switch (role) {
-                        case "ROLE_ADMIN" -> "/admin/dashboard";
+                        case "ROLE_ADMIN" -> "/admin/admin-dashboard";
                         case "ROLE_DOCTOR" -> "/doctor/dashboard";
                         case "ROLE_PATIENT" -> "/patient/dashboard";
                         case "ROLE_STAFF" -> "/staff/dashboard";
                         case "ROLE_PHARMACY" -> "/pharmacy/dashboard";
                         default -> "/";
                     };
-                    response.sendRedirect(redirectUrl);
+                    response.sendRedirect(request.getContextPath() + redirectUrl);
                 })
-                .failureHandler((_, response, _) -> {
+                .failureHandler((request, response, exception) -> {
+                    // log exception details for debugging
+                    logger.warn("Authentication failed: {}", exception.getMessage());
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Full authentication failure stacktrace", exception);
+                    }
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.getWriter().write("{\"success\": false, \"message\": \"Invalid credentials\"}");
                     response.setContentType("application/json");
+                    response.getWriter().write("{\"success\": false, \"message\": \"Invalid credentials\"}");
                 })
                 .permitAll()
             )
@@ -82,12 +96,15 @@ public class SecurityConfig {
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/")
                 .invalidateHttpSession(true)
+                .clearAuthentication(true)
                 .deleteCookies("JSESSIONID")
             )
             .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/static/**", "/api/register", "/perform_login")
+                .ignoringRequestMatchers("/api/register", "/perform_login")
             )
-            .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
+            .headers(headers -> headers
+                .frameOptions(frame -> frame.sameOrigin())
+                .xssProtection(xss -> xss.disable()));
 
         return http.build();
     }
